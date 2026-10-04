@@ -50,47 +50,84 @@ int save_product(Product product)
     return 1;
 }
 
-int main()
+int add_product(Product products[], int *product_count)
 {
-    Product products[1];
-
-    printf("----- Add Product -----\n");
-
-    printf("Enter your product ID: ");
-    if (scanf("%d", &products[0].product_id) != 1)
+    if (*product_count >= 100)
     {
-        printf("Invalid product ID!\n");
-        return 1;
+        printf("Inventory is full!\n");
+        return 0;
     }
+
+    Product product;
+
+    printf("\n----- Add Product -----\n");
+
+    printf("Enter product ID: ");
+    if (scanf("%d", &product.product_id) != 1)
+        return 0;
+
     getchar();
 
-    printf("Enter your product name: ");
-    if (fgets(products[0].product_name,
-              sizeof(products[0].product_name), stdin) == NULL)
+    printf("Enter product name: ");
+    if (fgets(product.product_name,
+              sizeof(product.product_name), stdin) == NULL)
+        return 0;
+
+    product.product_name[strcspn(product.product_name, "\n")] = '\0';
+
+    printf("Enter quantity: ");
+    if (scanf("%d", &product.quantity) != 1)
+        return 0;
+
+    printf("Enter price: ");
+    if (scanf("%f", &product.price) != 1)
+        return 0;
+
+    if (save_product(product))
     {
-        printf("Error reading product name!\n");
+        products[*product_count] = product;
+        (*product_count)++;
+
+        printf("Product added successfully!\n");
         return 1;
     }
 
-    products[0].product_name[strcspn(products[0].product_name, "\n")] = '\0';
+    return 0;
+}
 
-    printf("Enter your quantity: ");
-    if (scanf("%d", &products[0].quantity) != 1)
-    {
-        printf("Invalid quantity!\n");
-        return 1;
-    }
+int main()
+{
+    Product products[100];
+    int product_count = 0;
+    int choice;
 
-    printf("Enter your price: ");
-    if (scanf("%f", &products[0].price) != 1)
+    while (1)
     {
-        printf("Invalid price!\n");
-        return 1;
-    }
+        printf("\n===== INVENTORY MANAGEMENT SYSTEM =====\n");
+        printf("1. Add Product\n");
+        printf("2. Display Products\n");
+        printf("3. Exit\n");
 
-    if (save_product(products[0]))
-    {
-        display_product(products, 1);
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+        case 1:
+            add_product(products, &product_count);
+            break;
+
+        case 2:
+            display_product(products, product_count);
+            break;
+
+        case 3:
+            printf("Exiting program...\n");
+            return 0;
+
+        default:
+            printf("Invalid choice! Try again.\n");
+        }
     }
 
     return 0;
