@@ -10,32 +10,42 @@ typedef struct
     float price;
 } Product;
 
+void display_product(Product products[], int product_count)
+{
+    for (int i = 0; i < product_count; i++)
+    {
+        printf("=========================\n");
+        printf("     PRODUCT DETAILS\n");
+        printf("=========================\n");
+
+        printf("PRODUCT ID: %d\n", products[i].product_id);
+        printf("PRODUCT NAME: %s\n", products[i].product_name);
+        printf("PRODUCT QUANTITY: %d\n", products[i].quantity);
+        printf("PRODUCT PRICE: %.2f\n", products[i].price);
+    }
+}
+
 int main()
 {
-    Product product;
+    Product products[1];
 
     printf("----- Product Details -----\n");
 
     printf("Enter your product ID: ");
-    scanf("%d", &product.product_id);
+    scanf("%d", &products[0].product_id);
     getchar();
 
     printf("Enter your product name: ");
-    fgets(product.product_name, sizeof(product.product_name), stdin);
-    
-    product.product_name[strcspn(product.product_name, "\n")] = '\0';
+    fgets(products[0].product_name, sizeof(products[0].product_name), stdin);
+
+    products[0].product_name[strcspn(products[0].product_name, "\n")] = '\0';
 
     printf("Enter your quantity: ");
-    scanf("%d", &product.quantity);
+    scanf("%d", &products[0].quantity);
 
     printf("Enter your price: ");
-    scanf("%f", &product.price);
+    scanf("%f", &products[0].price);
 
-    printf("\n----- Product Information -----\n");
-    printf("Product ID: %d\n", product.product_id);
-    printf("Product Name: %s\n", product.product_name);
-    printf("Quantity: %d\n", product.quantity);
-    printf("Price: %.2f\n", product.price);
-
+    display_product(products, 1);
     return 0;
 }
