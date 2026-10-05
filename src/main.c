@@ -9,7 +9,7 @@ typedef struct
     int quantity;
     float price;
 } Product;
-
+int rewrite_products(Product products[], int product_count);
 void display_product(Product products[], int product_count)
 {
     for (int i = 0; i < product_count; i++)
@@ -46,6 +46,34 @@ int search_product(Product products[], int product_count, int product_id)
     return 0;
 }
 
+int delete_product(Product products[], int *product_count, int product_id)
+{
+    for (int i = 0; i < *product_count; i++)
+    {
+        if (products[i].product_id == product_id)
+        {
+            for (int j = i; j < *product_count - 1; j++)
+            {
+                products[j] = products[j + 1];
+            }
+
+            (*product_count)--;
+
+            if (rewrite_products(products, *product_count))
+            {
+                printf("Product deleted successfully!\n");
+                return 1;
+            }
+
+            printf("Error updating product file!\n");
+            return 0;
+        }
+    }
+
+    printf("Product not found!\n");
+    return 0;
+}
+
 int save_product(Product product)
 {
     FILE *file = fopen("../data/products.dat", "ab");
@@ -70,7 +98,24 @@ int save_product(Product product)
     printf("Product saved successfully!\n");
     return 1;
 }
+int rewrite_products(Product products[], int product_count)
+{
+    FILE *file = fopen("../data/products.dat", "wb");
 
+    if (file == NULL)
+    {
+        printf("Error opening file!\n");
+        return 0;
+    }
+
+    for (int i = 0; i < product_count; i++)
+    {
+        fwrite(&products[i], sizeof(Product), 1, file);
+    }
+
+    fclose(file);
+    return 1;
+}
 int add_product(Product products[], int *product_count)
 {
     if (*product_count >= 100)
@@ -147,7 +192,8 @@ int main()
         printf("1. Add Product\n");
         printf("2. Display Products\n");
         printf("3. Search Product\n");
-        printf("4. Exit\n");
+        printf("4. Delete Product\n");
+        printf("5. Exit\n");
 
         printf("Enter your choice: ");
         scanf("%d", &choice);
@@ -174,6 +220,17 @@ int main()
         }
 
         case 4:
+        {
+            int product_id;
+
+            printf("Enter product ID to delete: ");
+            scanf("%d", &product_id);
+
+            delete_product(products, &product_count, product_id);
+            break;
+        }
+
+        case 5:
             printf("Exiting program...\n");
             return 0;
 
