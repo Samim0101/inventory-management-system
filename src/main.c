@@ -25,6 +25,27 @@ void display_product(Product products[], int product_count)
     }
 }
 
+int search_product(Product products[], int product_count, int product_id)
+{
+    for (int i = 0; i < product_count; i++)
+    {
+        if (products[i].product_id == product_id)
+        {
+            printf("=========================\n");
+            printf("     PRODUCT FOUND\n");
+            printf("=========================\n");
+
+            printf("PRODUCT ID: %d\n", products[i].product_id);
+            printf("PRODUCT NAME: %s\n", products[i].product_name);
+            printf("PRODUCT QUANTITY: %d\n", products[i].quantity);
+            printf("PRODUCT PRICE: %.2f\n", products[i].price);
+            return 1;
+        }
+    }
+    printf("Product not found!\n");
+    return 0;
+}
+
 int save_product(Product product)
 {
     FILE *file = fopen("../data/products.dat", "ab");
@@ -125,7 +146,8 @@ int main()
         printf("\n===== INVENTORY MANAGEMENT SYSTEM =====\n");
         printf("1. Add Product\n");
         printf("2. Display Products\n");
-        printf("3. Exit\n");
+        printf("3. Search Product\n");
+        printf("4. Exit\n");
 
         printf("Enter your choice: ");
         scanf("%d", &choice);
@@ -141,6 +163,17 @@ int main()
             break;
 
         case 3:
+        {
+            int product_id;
+
+            printf("Enter product ID to search: ");
+            scanf("%d", &product_id);
+
+            search_product(products, product_count, product_id);
+            break;
+        }
+
+        case 4:
             printf("Exiting program...\n");
             return 0;
 
