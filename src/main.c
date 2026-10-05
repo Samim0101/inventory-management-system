@@ -95,12 +95,31 @@ int add_product(Product products[], int *product_count)
     return 0;
 }
 
+int load_products(Product products[], int *product_count)
+{
+    FILE *file = fopen("../data/products.dat", "rb");
+
+    if (file == NULL)
+    {
+        printf("No saved products found.\n");
+        return 0;
+    }
+    while (*product_count < 100 &&
+           fread(&products[*product_count], sizeof(Product), 1, file) == 1)
+    {
+        (*product_count)++;
+    }
+    fclose(file);
+    printf("Products load successfully!\n");
+    return 1;
+}
+
 int main()
 {
     Product products[100];
     int product_count = 0;
     int choice;
-
+    load_products(products, &product_count);
     while (1)
     {
         printf("\n===== INVENTORY MANAGEMENT SYSTEM =====\n");
