@@ -173,6 +173,21 @@ int rewrite_products(Product products[], int product_count)
     fclose(file);
     return 1;
 }
+
+
+int product_id_exists(Product products[], int product_count, int product_id)
+{
+    for (int i = 0; i < product_count; i++)
+    {
+        if (products[i].product_id == product_id)
+        {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 int add_product(Product products[], int *product_count)
 {
     if (*product_count >= 100)
@@ -185,11 +200,21 @@ int add_product(Product products[], int *product_count)
 
     printf("\n----- Add Product -----\n");
 
-    printf("Enter product ID: ");
-    if (scanf("%d", &product.product_id) != 1)
-        return 0;
+    
+printf("Enter product ID: ");
+if (scanf("%d", &product.product_id) != 1)
+{
+    printf("Invalid product ID!\n");
+    return 0;
+}
 
-    getchar();
+if (product_id_exists(products, *product_count, product.product_id))
+{
+    printf("Error: Product ID already exists!\n");
+    return 0;
+}
+
+getchar();
 
     printf("Enter product name: ");
     if (fgets(product.product_name,
