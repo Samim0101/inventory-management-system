@@ -74,6 +74,63 @@ int delete_product(Product products[], int *product_count, int product_id)
     return 0;
 }
 
+int update_product(Product products[], int product_count, int product_id)
+{
+    for (int i = 0; i < product_count; i++)
+    {
+        if (products[i].product_id == product_id)
+        {
+            printf("\n===== CURRENT PRODUCT DETAILS =====\n");
+            printf("Product ID: %d\n", products[i].product_id);
+            printf("Product Name: %s\n", products[i].product_name);
+            printf("Quantity: %d\n", products[i].quantity);
+            printf("Price: %.2f\n", products[i].price);
+
+            printf("\n===== ENTER NEW PRODUCT DETAILS =====\n");
+
+            // Clear the newline left by scanf()
+            getchar();
+
+            printf("Enter new product name: ");
+            if (fgets(products[i].product_name,
+                      sizeof(products[i].product_name), stdin) == NULL)
+            {
+                return 0;
+            }
+
+            // Remove the newline from the product name
+            products[i].product_name[strcspn(products[i].product_name, "\n")] = '\0';
+
+            printf("Enter new quantity: ");
+            if (scanf("%d", &products[i].quantity) != 1)
+            {
+                printf("Invalid quantity!\n");
+                return 0;
+            }
+
+            printf("Enter new price: ");
+            if (scanf("%f", &products[i].price) != 1)
+            {
+                printf("Invalid price!\n");
+                return 0;
+            }
+
+            // Save updated product details to the file
+            if (rewrite_products(products, product_count))
+            {
+                printf("\nProduct updated successfully!\n");
+                return 1;
+            }
+
+            printf("Error updating product file!\n");
+            return 0;
+        }
+    }
+
+    printf("Product not found!\n");
+    return 0;
+}
+
 int save_product(Product product)
 {
     FILE *file = fopen("../data/products.dat", "ab");
@@ -193,7 +250,8 @@ int main()
         printf("2. Display Products\n");
         printf("3. Search Product\n");
         printf("4. Delete Product\n");
-        printf("5. Exit\n");
+        printf("5. Update Product\n");
+        printf("6. Exit\n");
 
         printf("Enter your choice: ");
         scanf("%d", &choice);
@@ -231,6 +289,17 @@ int main()
         }
 
         case 5:
+        {
+            int product_id;
+
+            printf("Enter product ID to update: ");
+            scanf("%d", &product_id);
+
+            update_product(products, product_count, product_id);
+            break;
+        }
+
+        case 6:
             printf("Exiting program...\n");
             return 0;
 
