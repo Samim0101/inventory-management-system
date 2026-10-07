@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 typedef struct
 {
@@ -288,6 +289,29 @@ int load_products(Product products[], int *product_count)
     return 1;
 }
 
+int read_int(const char *prompt)
+{
+    char input[100];
+    int value;
+
+    while (1)
+    {
+        printf("%s", prompt);
+
+        if (fgets(input, sizeof(input), stdin) == NULL)
+        {
+            return 0;
+        }
+
+        if (sscanf(input, "%d", &value) == 1)
+        {
+            return value;
+        }
+
+        printf("Invalid input! Please enter a number.\n");
+    }
+}
+
 int main()
 {
     Product products[100];
@@ -304,8 +328,7 @@ int main()
         printf("5. Update Product\n");
         printf("6. Exit\n");
 
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
+        choice = read_int("Enter your choice: ");
 
         switch (choice)
         {
