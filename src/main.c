@@ -11,6 +11,8 @@ typedef struct
     float price;
 } Product;
 int rewrite_products(Product products[], int product_count);
+int read_int(const char *prompt);
+int rewrite_products(Product products[], int product_count);
 void display_product(Product products[], int product_count)
 {
     for (int i = 0; i < product_count; i++)
@@ -199,21 +201,13 @@ int add_product(Product products[], int *product_count)
     Product product;
 
     printf("\n----- Add Product -----\n");
-
-    printf("Enter product ID: ");
-    if (scanf("%d", &product.product_id) != 1)
-    {
-        printf("Invalid product ID!\n");
-        return 0;
-    }
+    product.product_id = read_int("Enter product ID: ");
 
     if (product_id_exists(products, *product_count, product.product_id))
     {
         printf("Error: Product ID already exists!\n");
         return 0;
     }
-
-    getchar();
 
     printf("Enter product name: ");
 
