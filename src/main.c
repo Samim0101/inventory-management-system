@@ -174,7 +174,6 @@ int rewrite_products(Product products[], int product_count)
     return 1;
 }
 
-
 int product_id_exists(Product products[], int product_count, int product_id)
 {
     for (int i = 0; i < product_count; i++)
@@ -200,36 +199,63 @@ int add_product(Product products[], int *product_count)
 
     printf("\n----- Add Product -----\n");
 
-    
-printf("Enter product ID: ");
-if (scanf("%d", &product.product_id) != 1)
-{
-    printf("Invalid product ID!\n");
-    return 0;
-}
+    printf("Enter product ID: ");
+    if (scanf("%d", &product.product_id) != 1)
+    {
+        printf("Invalid product ID!\n");
+        return 0;
+    }
 
-if (product_id_exists(products, *product_count, product.product_id))
-{
-    printf("Error: Product ID already exists!\n");
-    return 0;
-}
+    if (product_id_exists(products, *product_count, product.product_id))
+    {
+        printf("Error: Product ID already exists!\n");
+        return 0;
+    }
 
-getchar();
+    getchar();
 
     printf("Enter product name: ");
+
     if (fgets(product.product_name,
               sizeof(product.product_name), stdin) == NULL)
+    {
         return 0;
+    }
 
     product.product_name[strcspn(product.product_name, "\n")] = '\0';
 
+    if (strlen(product.product_name) == 0)
+    {
+        printf("Product name cannot be empty!\n");
+        return 0;
+    }
+
     printf("Enter quantity: ");
     if (scanf("%d", &product.quantity) != 1)
+    {
+        printf("Invalid quantity! Please enter a number.\n");
         return 0;
+    }
+
+    if (product.quantity < 0)
+    {
+        printf("Quantity cannot be negative!\n");
+        return 0;
+    }
 
     printf("Enter price: ");
+
     if (scanf("%f", &product.price) != 1)
+    {
+        printf("Invalid price! Please enter a number.\n");
         return 0;
+    }
+
+    if (product.price < 0)
+    {
+        printf("Price cannot be negative!\n");
+        return 0;
+    }
 
     if (save_product(product))
     {
