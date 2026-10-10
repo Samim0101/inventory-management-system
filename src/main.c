@@ -12,7 +12,7 @@ typedef struct
 } Product;
 int rewrite_products(Product products[], int product_count);
 int read_int(const char *prompt);
-int rewrite_products(Product products[], int product_count);
+float read_float(const char *prompt);
 void display_product(Product products[], int product_count)
 {
     for (int i = 0; i < product_count; i++)
@@ -225,12 +225,7 @@ int add_product(Product products[], int *product_count)
         return 0;
     }
 
-    printf("Enter quantity: ");
-    if (scanf("%d", &product.quantity) != 1)
-    {
-        printf("Invalid quantity! Please enter a number.\n");
-        return 0;
-    }
+    product.quantity = read_int("Enter quantity: ");
 
     if (product.quantity < 0)
     {
@@ -238,13 +233,7 @@ int add_product(Product products[], int *product_count)
         return 0;
     }
 
-    printf("Enter price: ");
-
-    if (scanf("%f", &product.price) != 1)
-    {
-        printf("Invalid price! Please enter a number.\n");
-        return 0;
-    }
+    product.price = read_float("Enter price: ");
 
     if (product.price < 0)
     {
@@ -306,6 +295,30 @@ int read_int(const char *prompt)
     }
 }
 
+float read_float(const char *prompt)
+{
+    char input[100];
+    float value;
+    char extra;
+
+    while (1)
+    {
+        printf("%s", prompt);
+
+        if (fgets(input, sizeof(input), stdin) == NULL)
+        {
+            return 0.0f;
+        }
+
+        if (sscanf(input, " %f %c", &value, &extra) == 1)
+        {
+            return value;
+        }
+
+        printf("Invalid input! Please enter a valid number.\n");
+    }
+}
+
 int main()
 {
     Product products[100];
@@ -338,8 +351,7 @@ int main()
         {
             int product_id;
 
-            printf("Enter product ID to search: ");
-            scanf("%d", &product_id);
+            product_id = read_int("Enter product ID to search: ");
 
             search_product(products, product_count, product_id);
             break;
@@ -349,8 +361,7 @@ int main()
         {
             int product_id;
 
-            printf("Enter product ID to delete: ");
-            scanf("%d", &product_id);
+            product_id = read_int("Enter product ID to delete: ");
 
             delete_product(products, &product_count, product_id);
             break;
@@ -360,8 +371,7 @@ int main()
         {
             int product_id;
 
-            printf("Enter product ID to update: ");
-            scanf("%d", &product_id);
+            product_id = read_int("Enter product ID to update: ");
 
             update_product(products, product_count, product_id);
             break;
