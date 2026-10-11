@@ -83,6 +83,8 @@ int update_product(Product products[], int product_count, int product_id)
     {
         if (products[i].product_id == product_id)
         {
+            Product updated = products[i];
+
             printf("\n===== CURRENT PRODUCT DETAILS =====\n");
             printf("Product ID: %d\n", products[i].product_id);
             printf("Product Name: %s\n", products[i].product_name);
@@ -91,40 +93,48 @@ int update_product(Product products[], int product_count, int product_id)
 
             printf("\n===== ENTER NEW PRODUCT DETAILS =====\n");
 
-            // Clear the newline left by scanf()
-            getchar();
-
             printf("Enter new product name: ");
-            if (fgets(products[i].product_name,
-                      sizeof(products[i].product_name), stdin) == NULL)
+
+            if (fgets(updated.product_name,
+                      sizeof(updated.product_name), stdin) == NULL)
             {
                 return 0;
             }
 
-            // Remove the newline from the product name
-            products[i].product_name[strcspn(products[i].product_name, "\n")] = '\0';
+            updated.product_name[strcspn(updated.product_name, "\n")] = '\0';
 
-            printf("Enter new quantity: ");
-            if (scanf("%d", &products[i].quantity) != 1)
+            if (strlen(updated.product_name) == 0)
             {
-                printf("Invalid quantity!\n");
+                printf("Product name cannot be empty!\n");
                 return 0;
             }
 
-            printf("Enter new price: ");
-            if (scanf("%f", &products[i].price) != 1)
+            updated.quantity = read_int("Enter new quantity: ");
+
+            if (updated.quantity < 0)
             {
-                printf("Invalid price!\n");
+                printf("Quantity cannot be negative!\n");
                 return 0;
             }
 
-            // Save updated product details to the file
+            updated.price = read_float("Enter new price: ");
+
+            if (updated.price < 0)
+            {
+                printf("Price cannot be negative!\n");
+                return 0;
+            }
+
+            Product original = products[i];
+            products[i] = updated;
+
             if (rewrite_products(products, product_count))
             {
                 printf("\nProduct updated successfully!\n");
                 return 1;
             }
 
+            products[i] = original;
             printf("Error updating product file!\n");
             return 0;
         }
