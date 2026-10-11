@@ -1,7 +1,10 @@
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <limits.h>
+#include <string.h> 
+#include <math.h>
 
 typedef struct
 {
@@ -168,22 +171,39 @@ int save_product(Product product)
     printf("Product saved successfully!\n");
     return 1;
 }
+
 int rewrite_products(Product products[], int product_count)
 {
     FILE *file = fopen("../data/products.dat", "wb");
 
     if (file == NULL)
     {
-        printf("Error opening file!\n");
+        perror("Error opening product file");
         return 0;
     }
 
+    int success = 1;
+
     for (int i = 0; i < product_count; i++)
     {
-        fwrite(&products[i], sizeof(Product), 1, file);
+        if (fwrite(&products[i], sizeof(Product), 1, file) != 1)
+        {
+            success = 0;
+            break;
+        }
     }
 
-    fclose(file);
+    if (fclose(file) != 0)
+    {
+        success = 0;
+    }
+
+    if (!success)
+    {
+        printf("Error writing product data!\n");
+        return 0;
+    }
+
     return 1;
 }
 
@@ -285,7 +305,8 @@ int load_products(Product products[], int *product_count)
 int read_int(const char *prompt)
 {
     char input[100];
-    int value;
+    char *end;
+    long value;
 
     while (1)
     {
@@ -293,23 +314,38 @@ int read_int(const char *prompt)
 
         if (fgets(input, sizeof(input), stdin) == NULL)
         {
-            return 0;
+            printf("\nInput closed. Exiting program.\n");
+            exit(EXIT_SUCCESS);
         }
 
-        if (sscanf(input, "%d", &value) == 1)
+        errno = 0;
+        value = strtol(input, &end, 10);
+
+        while (*end == ' ' || *end == '\t' ||
+               *end == '\n' || *end == '\r')
         {
-            return value;
+            end++;
         }
 
-        printf("Invalid input! Please enter a number.\n");
+        if (end != input &&
+            *end == '\0' &&
+            errno != ERANGE &&
+            value >= INT_MIN &&
+            value <= INT_MAX)
+        {
+            return (int)value;
+        }
+
+        printf("Invalid input! Please enter a whole number.\n");
     }
 }
+
 
 float read_float(const char *prompt)
 {
     char input[100];
+    char *end;
     float value;
-    char extra;
 
     while (1)
     {
@@ -317,10 +353,23 @@ float read_float(const char *prompt)
 
         if (fgets(input, sizeof(input), stdin) == NULL)
         {
-            return 0.0f;
+            printf("\nInput closed. Exiting program.\n");
+            exit(EXIT_SUCCESS);
         }
 
-        if (sscanf(input, " %f %c", &value, &extra) == 1)
+        errno = 0;
+        value = strtof(input, &end);
+
+        while (*end == ' ' || *end == '\t' ||
+               *end == '\n' || *end == '\r')
+        {
+            end++;
+        }
+
+        if (end != input &&
+            *end == '\0' &&
+            errno != ERANGE &&
+            isfinite(value))
         {
             return value;
         }
