@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <limits.h>
-#include <string.h> 
+#include <string.h>
 #include <math.h>
 
 typedef struct
@@ -58,7 +58,11 @@ int delete_product(Product products[], int *product_count, int product_id)
     {
         if (products[i].product_id == product_id)
         {
-            for (int j = i; j < *product_count - 1; j++)
+
+            Product deleted = products[i];
+            int old_count = *product_count;
+
+            for (int j = i; j < old_count - 1; j++)
             {
                 products[j] = products[j + 1];
             }
@@ -71,7 +75,16 @@ int delete_product(Product products[], int *product_count, int product_id)
                 return 1;
             }
 
+            for (int j = *product_count; j > i; j--)
+            {
+                products[j] = products[j - 1];
+            }
+
+            products[i] = deleted;
+            (*product_count)++;
+
             printf("Error updating product file!\n");
+            printf("The product has been restored in memory.\n");
             return 0;
         }
     }
@@ -79,7 +92,6 @@ int delete_product(Product products[], int *product_count, int product_id)
     printf("Product not found!\n");
     return 0;
 }
-
 int update_product(Product products[], int product_count, int product_id)
 {
     for (int i = 0; i < product_count; i++)
@@ -339,7 +351,6 @@ int read_int(const char *prompt)
         printf("Invalid input! Please enter a whole number.\n");
     }
 }
-
 
 float read_float(const char *prompt)
 {
